@@ -96,7 +96,7 @@ function queryNumber(product, quantity) {
       if (stockAvail < quantity) {
         console.log("Not enough stock available! Order not processed.");
         mainQuery();
-      } else{
+      } else {
         // process normally
         console.log("Processing Order.");
         processOrder(product, quantity, stockAvail);
@@ -111,6 +111,18 @@ function processOrder(product, quantityNeeded, quantityAvail) {
   connection.query(query, [{ "stock_quantity": quantityAvail - quantityNeeded }, { "product_name": product }], function (err, res) {
     if (err) throw err;
     console.log("Order Processed Successfully!");
-    mainQuery();
+    showCost(product,quantityNeeded);
   })
+}
+
+function showCost(product, quantityOrdered) {
+  var query = "SELECT price FROM products WHERE ?;";
+  connection.query(query, { product_name: product }, function (err, res) {
+    if (err) throw err;
+
+    price=res[0].price;
+    cost=price*quantityOrdered;
+    console.log(`Total cost of order: ${Number.parseFloat(cost).toFixed(2)}`);
+    mainQuery();
+  });
 }
